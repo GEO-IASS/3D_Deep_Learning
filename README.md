@@ -59,7 +59,7 @@ Example python code reading 2 digits and storing some of the group content in tu
         digit_a = (a["img"][:], a["points"][:], a.attrs["label"]) 
         digit_b = (b["img"][:], b["points"][:], b.attrs["label"]) 
 
-In the [3DMNIST notebook](http://nbviewer.jupyter.org/github/daavoo/3DMNIST/blob/master/3DMNIST.ipynb) you can find the code used to generate the dataset.
+In the [3D_from_2D notebook](http://nbviewer.jupyter.org/github/daavoo/3DMNIST/blob/master/3D_from_2D.ipynb) you can find the code used to generate the dataset.
 
 You can use the code in the notebook to generate a bigger 3D dataset from the original.
  
