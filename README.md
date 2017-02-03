@@ -32,14 +32,6 @@ The full dataset is splitted into arrays:
 - X_test(2000, 4096)
 - y_test (2000)
 
-Example python code reading the full dataset:
-
-    with h5py.File("../input/train_point_clouds.h5", "r") as hf:    
-        X_train = hf["X_train"][:]
-        y_train = hf["y_train"][:]    
-        X_test = hf["X_test"][:]  
-        y_test = hf["y_test"][:]  
-
 ## train_point_clouds.h5 & test_point_clouds.h5
 
 5000 (train),  and 1000 (test) [3D point clouds](https://en.wikipedia.org/wiki/Point_cloud) stored in [HDF5 file format](https://support.hdfgroup.org/HDF5/whatishdf5.html). The point clouds have zero mean and a maximum dimension range of 1.
