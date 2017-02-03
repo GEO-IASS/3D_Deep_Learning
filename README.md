@@ -18,6 +18,10 @@ However there is a lack of large 3D datasets (you can find a [good one here](htt
 
 This dataset contains 3D point clouds generated from the original images of the MNIST dataset to bring a familiar introduction to 3D to people used to work with 2D datasets (images).
 
+In the [3D_from_2D notebook](http://nbviewer.jupyter.org/github/daavoo/3DMNIST/blob/master/3D_from_2D.ipynb) you can find the code used to generate the dataset.
+
+You can use the code in the notebook to generate a bigger 3D dataset from the original.
+
 # Content
 ## full_dataset_vectors.h5
 
@@ -32,11 +36,13 @@ The full dataset is splitted into arrays:
 - X_test(2000, 4096)
 - y_test (2000)
 
-
-In the [3D_from_2D notebook](http://nbviewer.jupyter.org/github/daavoo/3DMNIST/blob/master/3D_from_2D.ipynb) you can find the code used to generate the dataset.
-
-You can use the code in the notebook to generate a bigger 3D dataset from the original.
-
+Example python code reading the full dataset:
+ 
+     with h5py.File("../input/train_point_clouds.h5", "r") as hf:    
+         X_train = hf["X_train"][:]
+         y_train = hf["y_train"][:]    
+         X_test = hf["X_test"][:]  
+         y_test = hf["y_test"][:]  
 
 ## train_point_clouds.h5 & test_point_clouds.h5
 
