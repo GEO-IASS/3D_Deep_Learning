@@ -32,6 +32,12 @@ The full dataset is splitted into arrays:
 - X_test(2000, 4096)
 - y_test (2000)
 
+
+In the [3D_from_2D notebook](http://nbviewer.jupyter.org/github/daavoo/3DMNIST/blob/master/3D_from_2D.ipynb) you can find the code used to generate the dataset.
+
+You can use the code in the notebook to generate a bigger 3D dataset from the original.
+
+
 ## train_point_clouds.h5 & test_point_clouds.h5
 
 5000 (train),  and 1000 (test) [3D point clouds](https://en.wikipedia.org/wiki/Point_cloud) stored in [HDF5 file format](https://support.hdfgroup.org/HDF5/whatishdf5.html). The point clouds have zero mean and a maximum dimension range of 1.
@@ -52,10 +58,6 @@ Example python code reading 2 digits and storing some of the group content in tu
         b = hf["1"]    
         digit_a = (a["img"][:], a["points"][:], a.attrs["label"]) 
         digit_b = (b["img"][:], b["points"][:], b.attrs["label"]) 
-
-In the [3D_from_2D notebook](http://nbviewer.jupyter.org/github/daavoo/3DMNIST/blob/master/3D_from_2D.ipynb) you can find the code used to generate the dataset.
-
-You can use the code in the notebook to generate a bigger 3D dataset from the original.
  
 ## voxelgrid.py
 Simple Python class that generates a grid of voxels from the 3D point cloud. Check kernel for use.
