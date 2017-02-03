@@ -2,6 +2,7 @@
 
 A 3D version of the [MNIST database of handwritten digits](http://yann.lecun.com/exdb/mnist/)
 
+You can also find [this dataset at Kaggle](https://www.kaggle.com/daavoo/3d-mnist)
 ![3D MNIST](data/3Dmnist.png)
 
 The aim of this dataset is to provide a simple way to get started with 3D computer vision problems such as 3D shape recognition.
