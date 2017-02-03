@@ -2,7 +2,7 @@
 
 A 3D version of the [MNIST database of handwritten digits](http://yann.lecun.com/exdb/mnist/)
 
-You can also find [this dataset at Kaggle](https://www.kaggle.com/daavoo/3d-mnist)
+You can also find and download an already [computed dataset at Kaggle](https://www.kaggle.com/daavoo/3d-mnist)
 
 ![3D MNIST](data/3Dmnist.png)
 
