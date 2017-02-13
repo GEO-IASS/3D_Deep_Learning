@@ -2,6 +2,48 @@ import numpy as np
 import pandas as pd 
 
 def voxelgrid(points, x_y_z=[1,1,1]):
+    """ Build a voxelgrid and compute the corresponding index for each point.
+
+    Parameters
+    ----------
+    points : ndarray
+        (N, 3) array where n is the number of 3D points to process.
+    x_y_z : list of ints
+        The number of segments in wich each axis will be subdivided in
+        order to compute the voxelgrid.
+
+    Returns
+    -------
+    voxelgrid_indices : ndarray
+        (N,) array where the nth entry correspond to the voxelgrid index where
+        the nth point (from the given points) lies.
+    centers: ndarray
+        (x_y_z[0] * x_y_z[1] *x_y_z[2],) array representing the centroid of each
+        of the voxels in the voxelgrid.
+    sizes: list 
+        Voxel size along x, y and z dimensions.
+
+    Examples
+    --------
+    >>> points = np.array([[0,0,0],[1,1,1]])
+    >>> voxelgrid_indices, centers, sizes = voxelgrid(points, [2,2,2])
+    >>> voxelgrid_indices
+    array([0, 7], dtype=int64)
+    >>> centers
+    array([
+        [ 0.25,  0.25,  0.25],
+        [ 0.25,  0.25,  0.75],
+        [ 0.25,  0.75,  0.25],
+        [ 0.25,  0.75,  0.75],
+        [ 0.75,  0.25,  0.25],
+        [ 0.75,  0.25,  0.75],
+        [ 0.75,  0.75,  0.25],
+        [ 0.75,  0.75,  0.75]
+        ])
+    >>> sizes
+    [0.5, 0.5, 0.5]
+    
+    """
     xyzmin = np.min(points, axis=0) 
     xyzmax = np.max(points, axis=0) 
 
@@ -24,13 +66,13 @@ def voxelgrid(points, x_y_z=[1,1,1]):
     y = np.clip(np.searchsorted(segments[1], points[:,1]) - 1, 0, x_y_z[1])
     z = np.clip(np.searchsorted(segments[2], points[:,2]) - 1, 0, x_y_z[2])
     
-    voxelgrid = np.ravel_multi_index([x,y,z], x_y_z)
+    voxelgrid_indices = np.ravel_multi_index([x,y,z], x_y_z)
 
     # compute center of each voxel
-    midsegments = [(segments[i,1:] + segments[i,:-1]) / 2 for i in range(3)]
+    midsegments = [(segments[i][1:] + segments[i][:-1]) / 2 for i in range(3)]
     centers = cartesian(midsegments)
 
-    return voxelgrid, centers, sizes
+    return voxelgrid_indices, centers, sizes
 
 
 def cartesian(arrays, out=None):
