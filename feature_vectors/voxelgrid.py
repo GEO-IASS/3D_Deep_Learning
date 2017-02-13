@@ -17,7 +17,7 @@ def voxelgrid(points, x_y_z=[1,1,1]):
     # -1 so index are 0-based
     x = np.searchsorted(segments[0], points[:,0]) - 1
     y = np.searchsorted(segments[1], points[:,1]) - 1
-    y = np.searchsorted(segments[2], points[:,2]) - 1
+    z = np.searchsorted(segments[2], points[:,2]) - 1
 
     n_x, n_y, n_z = x_y_z
     # i = ((y * n_x) + x) + (z * (n_x * n_y))
