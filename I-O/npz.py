@@ -23,7 +23,6 @@ def read_npz(filename, points_name="points", mesh_name="mesh"):
                 data[i] =  pd.DataFrame(npz[i])
             except KeyError:
                 pass
-    
     return data
 
 
