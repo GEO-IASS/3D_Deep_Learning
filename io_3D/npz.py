@@ -16,20 +16,18 @@ def read_npz(filename, points_name="points", mesh_name="mesh"):
 
     """
     
-    data = {}
     with np.load(filename) as npz:
-        for i in {"points", "mesh"}:
-            try:
-                data[i] =  pd.DataFrame(npz[i])
-            except KeyError:
-                pass
-    return data
+        points = npz[points_name]
+
+        if mesh_name is not None:
+            mesh = npz[mesh_name]
+            return points, mesh
+
+    return points
 
 
 def write_npz(filename,  **kwargs):
-    
     """
-
     Parameters
     ----------
     filename: str
