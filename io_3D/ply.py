@@ -97,8 +97,9 @@ def read_ply(filename):
         points = points.values
         if mesh_size is not None:
             top = count + points_size
-            names = [x[0] for x in dtypes["face"]][1:]
-            mesh = pd.read_csv(filename, sep=" ", header=None, engine="python", skiprows=top, usecols=names, names=names)    
+            names = [x[0] for x in dtypes["face"]]
+            usecols = names[1:]
+            mesh = pd.read_csv(filename, sep=" ", header=None, engine="python", skiprows=top, usecols=usecols, names=names)    
             mesh = mesh.values
 
     else:
