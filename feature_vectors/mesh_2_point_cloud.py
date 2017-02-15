@@ -1,11 +1,28 @@
 import numpy as np
 
+def get_vertices(points, mesh):
+    """ Get vertices of mesh from points
+
+    Parameters
+    ----------
+    points: (N, 3) ndarray
+        Contains the x,y,z coordinates of each point.
+    mesh: (N, 3) ndarray
+        mesh[0] represents a triangle formed by 3 vertices.
+        mesh[0, i] represents the index of the ith vertice in the
+        associated points array.
+
+    """
+    v1 = points[mesh[:,0]]
+    v2 = points[mesh[:,1]]
+    v3 = points[mesh[:,2]]
+    return v1, v2, v3
+
 def mesh_sampling(v1, v2, v3, n):
     """ Sample n points from the mesh defined by v1, v2, v3.
 
     Parameters
     ----------
-
     v1: (N, 3) ndarray
         Contains the x,y,z coordinates of points considered as the
         first vertex of each triangle.
