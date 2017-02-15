@@ -17,6 +17,7 @@ Under this directory you can find read and write functions for specific 3D forma
 Under this directory you can find some "toy" 3D datasets created by myself.
 
 - 3DMNIST
+    
     A 3D version of the MNIST database of handwritten digits.
     This dataset can also be found [at kaggle](https://www.kaggle.com/daavoo/3d-mnist).
 
