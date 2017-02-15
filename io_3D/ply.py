@@ -43,89 +43,78 @@ def read_ply(filename):
     with open(filename, 'rb') as ply:
         if b'ply' not in ply.readline():
             raise ValueError('The file does not start whith the word ply')
+
         # get binary_little/big or ascii
         fmt = ply.readline().split()[1].decode()
     
         # get extension for building the numpy dtypes
         ext = valid_formats[fmt]
-        
-        if fmt not in valid_formats.keys():
-            raise ValueError('A valid format could not be found')
                 
         line = []
-        comments = []
-        obj_info = []
-        names = []
-        sizes = []
         dtypes = defaultdict(list)
         
-        # we have already read 2 lines
         count = 2
-        # use n to track the number of elements and build the dtypes
-        n = -1
-        
+
+        points_size = None
+        mesh_size = None        
         while b'end_header' not in line and line != b'':
             line = ply.readline()
-            if b'comment' in line:
-                comments.append(line.decode())
-            elif b'obj_info' in line:
-                obj_info.append(line.decode())
-            elif b'element' in line:
-                n += 1
+
+            if b'element' in line:
                 line = line.split()
                 name = line[1].decode()
-                if name == "vertex":
-                    name = "points"
-                elif name == "face":
-                    name = "mesh"
                 size = int(line[2])
-                names.append(name)
-                sizes.append(size)
+                if name == "vertex":
+                    points_size = size
+                elif name == "face":
+                    mesh_size = size
+                
             elif b'property' in line:
                 line = line.split()
                 # element mesh
                 if b'list' in line:
                     mesh_names = ['n_points', 'v1', 'v2', 'v3']
                     # the first number has different dtype than the list
-                    dtypes[n].append((mesh_names[0], ext + ply_dtypes[line[2]]))
+                    dtypes[name].append((mesh_names[0], ext + ply_dtypes[line[2]]))
                     # rest of the numbers have the same dtype
                     dt = ext + ply_dtypes[line[3]]
                     for j in range(1, 4):
-                        dtypes[n].append((mesh_names[j], dt))
-                # regular elements
+                        dtypes[name].append((mesh_names[j], dt))
                 else:
-                    dtypes[n].append((line[2].decode(), ext + ply_dtypes[line[1]]))
+                    dtypes[name].append((line[2].decode(), ext + ply_dtypes[line[1]]))
             count += 1
         
-        # for ascii
-        sizes.insert(0, count)
         # for bin
         end_header = ply.tell()
 
-    data = {'comments': comments, 'obj_info': obj_info}
-
+    points = None
+    mesh = None
     if fmt == 'ascii':
-        top = 0
-        bottom = 0
-        for i in range(len(names)):
-            top += sizes[i]
-            bottom = 0
-            # if there is more than 1 element adjust the bottom padding
-            if len(sizes) > i + 2:
-                bottom = sizes[i + 2]
-                
-            data[names[i]] = pd.DataFrame(np.genfromtxt(filename,
-                            skip_header=top, skip_footer=bottom, dtype=dtypes[i]))
+        top = count
+        bottom = 0 if mesh_size is None else mesh_size 
+        names = [x[0] for x in dtypes["vertex"]]
+        points = pd.read_csv(filename, sep=" ", header=None, engine="python", skiprows=top, skip_footer=bottom, usecols=names, names=names)  
+        points = points.values
+        if mesh_size is not None:
+            top = count + points_size
+            names = [x[0] for x in dtypes["face"]][1:]
+            mesh = pd.read_csv(filename, sep=" ", header=None, engine="python", skiprows=top, usecols=names, names=names)    
+            mesh = mesh.values
 
     else:
         with open(filename, 'rb') as ply:
             ply.seek(end_header)
-            for i in range(len(names)):
-                data[names[i]] = pd.DataFrame(np.fromfile(ply, dtype=dtypes[i],
-                                                            count=sizes[i + 1]))
-
-
-    return data
+            points = pd.DataFrame(np.fromfile(ply, dtype=dtypes["vertex"], count=points_size))
+            points = points.values
+            if mesh_size is not None:
+                mesh = pd.DataFrame(np.fromfile(ply, dtype=dtypes["face"], count=mesh_size))
+                mesh = mesh.values
+    
+    if mesh is not None:
+        return points, mesh
+    
+    else:
+        return points
 
 
 def write_ply(filename, points=None, mesh=None, comments=None, obj_info=None,
