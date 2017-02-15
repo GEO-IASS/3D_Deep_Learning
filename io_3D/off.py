@@ -22,13 +22,13 @@ def read_off(filename):
                 n_faces = int(line[1])
                 break
 
-        data = {}
-
-        data["points"] = pd.read_csv(filename, sep=" ", header=None, engine="python",
+        points = pd.read_csv(filename, sep=" ", header=None, engine="python",
                              skiprows=count, skip_footer=n_faces,
                              names=["x", "y", "z"])
-        
-        data["mesh"] = pd.read_csv(filename, sep=" ", header=None, engine="python",
-                            skiprows=(count + n_points), usecols=[1,2,3],
-                            names=["v1", "v2", "v3"])
-        return data
+        if n_faces != 0:
+            mesh = pd.read_csv(filename, sep=" ", header=None, engine="python",
+                                skiprows=(count + n_points), usecols=[1,2,3],
+                                names=["v1", "v2", "v3"])
+            return points.values, mesh.values
+
+        return points.values, mesh.values
