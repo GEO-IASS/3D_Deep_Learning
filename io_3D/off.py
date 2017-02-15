@@ -31,4 +31,4 @@ def read_off(filename):
                                 names=["v1", "v2", "v3"])
             return points.values, mesh.values
 
-        return points.values, mesh.values
+        return points.values

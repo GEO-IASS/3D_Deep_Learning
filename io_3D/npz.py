@@ -10,10 +10,7 @@ def read_npz(filename, points_name="points", mesh_name="mesh"):
     ----------
     filename: str
         Path tho the filename
-    Returns
-    -------
-    data: dict
-
+        
     """
     
     with np.load(filename) as npz:
@@ -33,12 +30,7 @@ def write_npz(filename,  **kwargs):
     filename: str
         The created file will be named with this
 
-    kwargs: Elements of the pyntcloud to be saved
-
-    Returns
-    -------
-    boolean
-        True if no problems
+    kwargs: Elements to be saved
 
     """
     for k in kwargs:

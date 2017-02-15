@@ -119,22 +119,17 @@ def read_ply(filename):
         return points
 
 
-def write_ply(filename, points=None, mesh=None, comments=None, obj_info=None,
-                                                        as_text=False, **kwargs):
+def write_ply(filename, points=None, mesh=None, as_text=False):
     """
 
     Parameters
     ----------
     filename: str
         The created file will be named with this
-    points: DataFrame
-    mesh: DataFrame
-    comments: list[str] or str
-    obj_info: list[str] or str
+    points: ndarray
+    mesh: ndarray
     as_text: boolean
         Set the write mode of the file. Default: binary
-    kwargs: DataFrame
-        Custom ply elements apart from the common ones
 
     Returns
     -------
@@ -154,16 +149,10 @@ def write_ply(filename, points=None, mesh=None, comments=None, obj_info=None,
         else:
             header.append('format binary_' + sys.byteorder + '_endian 1.0')
 
-        if comments is not None:
-            header.extend(comments)
-        if obj_info is not None:
-            header.extend(obj_info)
         if points is not None:
             header.extend(describe_element('vertex', points))
         if mesh is not None:
             header.extend(describe_element('face', mesh))
-        for key in kwargs:
-            header.extend(describe_element(key, kwargs[key]))
 
         header.append('end_header')
 
@@ -177,9 +166,7 @@ def write_ply(filename, points=None, mesh=None, comments=None, obj_info=None,
         if mesh is not None:
             mesh.to_csv(filename, sep=" ", index=False, header=False, mode='a',
                                                                 encoding='ascii')
-        for key in kwargs:
-            kwargs[key].to_csv(filename, sep=" ", index=False, header=False, mode='a',
-                                                                encoding='ascii')
+
     else:
         # open in binary/append to use tofile
         with open(filename, 'ab') as ply:
@@ -187,8 +174,7 @@ def write_ply(filename, points=None, mesh=None, comments=None, obj_info=None,
                 points.to_records(index=False).tofile(ply)
             if mesh is not None:
                 mesh.to_records(index=False).tofile(ply)
-            for key in kwargs:
-                kwargs[key].to_records(index=False).tofile(ply)
+                
     return True
     
 
