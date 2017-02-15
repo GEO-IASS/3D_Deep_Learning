@@ -1,16 +1,27 @@
 import numpy as np
-import pandas as pd 
 
-def voxelgrid(points, x_y_z=[1,1,1]):
+def voxelgrid(points, x_y_z=[1,1,1], bb_cuboiud=True):
     """ Build a voxelgrid and compute the corresponding index for each point.
 
     Parameters
     ----------
-    points : ndarray
-        (N, 3) array where n is the number of 3D points to process.
-    x_y_z : list of ints
-        The number of segments in wich each axis will be subdivided in
-        order to compute the voxelgrid.
+    points: (N,3) ndarray
+                The point cloud from wich we want to construct the VoxelGrid.
+                Where N is the number of points in the point cloud and the second
+                dimension represents the x, y and z coordinates of each point.
+        
+    x_y_z:  list
+            The segments in wich each axis will be divided.
+            x_y_z[0]: x axis 
+            x_y_z[1]: y axis 
+            x_y_z[2]: z axis
+
+    bb_cuboid(Optional): bool
+            If True(Default):   
+                The bounding box of the point cloud will be adjusted
+                in order to have all the dimensions of equal lenght.                
+            If False:
+                The bounding box is allowed to have dimensions of different sizes.
 
     Returns
     -------
@@ -47,10 +58,11 @@ def voxelgrid(points, x_y_z=[1,1,1]):
     xyzmin = np.min(points, axis=0) 
     xyzmax = np.max(points, axis=0) 
 
-    # adjust to obtain a  minimum bounding box with all sides of equal lenght 
-    diff = max(xyzmax-xyzmin) - (xyzmax-xyzmin)
-    xyzmin = xyzmin - diff / 2
-    xyzmax = xyzmax + diff / 2 
+    if bb_cuboid:
+        #: adjust to obtain a  minimum bounding box with all sides of equal lenght 
+        diff = max(xyzmax-xyzmin) - (xyzmax-xyzmin)
+        xyzmin = xyzmin - diff / 2
+        xyzmax = xyzmax + diff / 2 
 
     # segment each axis according to number of voxels
     sizes =[]
