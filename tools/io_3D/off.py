@@ -10,8 +10,10 @@ def read_off(filename):
         if "OFF\n" not in line:
             print("Error in format for file {}, trying to fix it".format(filename))
             numbers = line.split("OFF")[1].split()
+            skip = 1
         else:
             numbers = off.readline().strip().split()
+            skip = 2
 
     n_points = int(numbers[0])
     n_faces = int(numbers[1])
@@ -19,10 +21,10 @@ def read_off(filename):
     data = {}
 
     data["points"] = pd.read_csv(filename, sep=" ", header=None, engine="python",
-                            skiprows=2, skip_footer=n_faces,
+                            skiprows=skip, skip_footer=n_faces,
                             names=["x", "y", "z"])
 
     data["mesh"] = pd.read_csv(filename, sep=" ", header=None, engine="python",
-                        skiprows=(2 + n_points), usecols=[1,2,3],
+                        skiprows=(skip + n_points), usecols=[1,2,3],
                         names=["v1", "v2", "v3"])
     return data
