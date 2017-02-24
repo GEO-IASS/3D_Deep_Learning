@@ -13,9 +13,9 @@ def get_vertices(points, mesh):
         associated points array.
 
     """
-    v1 = points[mesh[:,0]]
-    v2 = points[mesh[:,1]]
-    v3 = points[mesh[:,2]]
+    v1 = points.values[mesh["v1"]]
+    v2 = points.values[mesh["v2"]]
+    v3 = points.values[mesh["v3"]]
     return v1, v2, v3
 
 def mesh_sampling(v1, v2, v3, n):
