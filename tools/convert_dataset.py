@@ -52,7 +52,7 @@ def dataset_to_feature_vectors(dataset_path, output_path, n_voxelgrid,
 
                 feature_vector = data_3D_to_feature_vector(data_3D, n_voxelgrid, size_voxelgrid, n_sampling, mode)
 
-                new_file = "{}\\{}\\{}\\{}".format(output_path, split_folder, class_folder, file_3D.replace(ext, ".npy"))
+                new_file = "{}\\{}\\{}\\{}".format(output_path, split_folder, class_folder, file_3D.replace(".{}".format(ext.lower()), ".npy"))
 
                 np.save(new_file, feature_vector.astype(out_type))
 
