@@ -26,11 +26,16 @@ def voxelgrid(points, n=2, size=None):
     voxelgrid_indices : ndarray
         (N,) array where the nth entry correspond to the voxelgrid index where
         the nth point (from the given points) lies.
+
     centers: ndarray
         (x_y_z[0] * x_y_z[1] *x_y_z[2],) array representing the centroid of each
         of the voxels in the voxelgrid.
+
     dimensions: array-like 
         Voxel size along x, y and z dimensions.
+    
+    x_y_z: array-like
+        Number of voxels along x, y and z axis
 
     Examples
     --------
@@ -133,7 +138,7 @@ def voxelgrid(points, n=2, size=None):
     midsegments = [(segments[i][1:] + segments[i][:-1]) / 2 for i in range(3)]
     centers = cartesian(midsegments)
 
-    return voxelgrid_indices, centers, dimensions
+    return voxelgrid_indices, centers, dimensions, x_y_z
 
 
 def cartesian(arrays, out=None):
