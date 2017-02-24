@@ -23,7 +23,7 @@ def dataset_to_feature_vectors(dataset_path, output_path, n_voxelgrid,
     try:
         os.mkdir(output_path)
     except FileExistsError:
-        print("{} already exist".format(output_path))
+        pass
 
     # train / val / test split
     for split_folder in os.listdir(dataset_path):
@@ -32,7 +32,7 @@ def dataset_to_feature_vectors(dataset_path, output_path, n_voxelgrid,
             new_dir = "{}\\{}".format(output_path, split_folder)
             os.mkdir(new_dir)
         except FileExistsError:
-            print("{} already exist".format(new_dir))
+            pass
 
         for class_folder in os.listdir("{}\\{}".format(dataset_path, split_folder)):
             print("CONVERTING FOLDER: {}\\{}".format(split_folder, class_folder))
@@ -41,7 +41,7 @@ def dataset_to_feature_vectors(dataset_path, output_path, n_voxelgrid,
                 new_dir = "{}\\{}\\{}".format(output_path, split_folder, class_folder)
                 os.mkdir(new_dir)
             except FileExistsError:
-                print("{} already exist".format(new_dir))
+                pass
 
             for file_3D in os.listdir("{}\\{}\\{}".format(dataset_path, split_folder, class_folder)):
 
