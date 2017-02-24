@@ -44,18 +44,17 @@ def dataset_to_feature_vectors(dataset_path, output_path, n_voxelgrid,
                 print("{} already exist".format(new_dir))
 
             for file_3D in os.listdir("{}\\{}\\{}".format(dataset_path, split_folder, class_folder)):
-                
+
                 fname = "{}\\{}\\{}\\{}".format(dataset_path, split_folder, class_folder, file_3D)
-
+                    
                 ext = file_3D.split(".")[-1].upper()
-                data_3D = FROM[ext](fname)
 
-                feature_vector = data_3D_to_feature_vector(data_3D, n_voxelgrid, size_voxelgrid, n_sampling, mode)
-
-                new_file = "{}\\{}\\{}\\{}".format(output_path, split_folder, class_folder, file_3D.replace(".{}".format(ext.lower()), ".npy"))
-
-                np.save(new_file, feature_vector.astype(out_type))
-
+                new_fname= "{}\\{}\\{}\\{}".format(output_path, split_folder, class_folder,
+                                                     file_3D.replace(".{}".format(ext.lower()), ".npy"))
+                if not os.path.exists(new_fname):
+                    data_3D = FROM[ext](fname)
+                    feature_vector = data_3D_to_feature_vector(data_3D, n_voxelgrid, size_voxelgrid, n_sampling, mode)
+                    np.save(new_fname, feature_vector.astype(out_type))
 
 def data_3D_to_feature_vector(data_3D, n_voxelgrid, size_voxelgrid=None, n_sampling=None, mode="binary"):
 

@@ -8,7 +8,6 @@ def read_off(filename):
     with open(filename) as off:
         line = off.readline()
         if "OFF\n" not in line:
-            print("Error in format for file {}, trying to fix it".format(filename))
             numbers = line.split("OFF")[1].split()
             skip = 1
         else:
