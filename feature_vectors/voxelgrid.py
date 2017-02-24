@@ -1,27 +1,25 @@
 import numpy as np
 
-def voxelgrid(points, x_y_z=[1,1,1], bb_cuboiud=True):
+def voxelgrid(points, n=2, size=None):
     """ Build a voxelgrid and compute the corresponding index for each point.
 
     Parameters
     ----------
     points: (N,3) ndarray
-                The point cloud from wich we want to construct the VoxelGrid.
-                Where N is the number of points in the point cloud and the second
-                dimension represents the x, y and z coordinates of each point.
+        The point cloud from wich we want to construct the VoxelGrid.
+        Where N is the number of points in the point cloud and the second
+        dimension represents the x, y and z coordinates of each point.
         
-    x_y_z:  list
-            The segments in wich each axis will be divided.
-            x_y_z[0]: x axis 
-            x_y_z[1]: y axis 
-            x_y_z[2]: z axis
-
-    bb_cuboid(Optional): bool
-            If True(Default):   
-                The bounding box of the point cloud will be adjusted
-                in order to have all the dimensions of equal lenght.                
-            If False:
-                The bounding box is allowed to have dimensions of different sizes.
+    n:  int
+        The number of voxels per axis. i.e:
+        n = 2 results in a 2x2x2 voxelgrid
+        The bounding box will be adjusted in order to have all sizes of equal length.
+    
+    size: float, optional
+        The desired voxel size. The number of voxels will be infered. i.e:
+        size = 0.2 results in a IxJxK voxelgrid ensuring that each voxel is 0.2x0.2x0.2
+        If size is not None, n will be ignored.
+        The bounding box will be adjusted in order to make each axis divisible by size.
 
     Returns
     -------
@@ -31,46 +29,97 @@ def voxelgrid(points, x_y_z=[1,1,1], bb_cuboiud=True):
     centers: ndarray
         (x_y_z[0] * x_y_z[1] *x_y_z[2],) array representing the centroid of each
         of the voxels in the voxelgrid.
-    sizes: list 
+    dimensions: array-like 
         Voxel size along x, y and z dimensions.
 
     Examples
     --------
-    >>> points = np.array([[0,0,0],[1,1,1]])
-    >>> voxelgrid_indices, centers, sizes = voxelgrid(points, [2,2,2])
+
+    Using n:
+
+    >>>  points = np.array([[0.,0.,0.], [1.,1.,1.]])
+    >>> voxelgrid_indices, centers, dimensions = voxelgrid(points, n=2)
     >>> voxelgrid_indices
-    array([0, 7], dtype=int64)
+        array([0, 7], dtype=int64)
     >>> centers
-    array([
-        [ 0.25,  0.25,  0.25],
-        [ 0.25,  0.25,  0.75],
-        [ 0.25,  0.75,  0.25],
-        [ 0.25,  0.75,  0.75],
-        [ 0.75,  0.25,  0.25],
-        [ 0.75,  0.25,  0.75],
-        [ 0.75,  0.75,  0.25],
-        [ 0.75,  0.75,  0.75]
-        ])
+        array([
+            [ 0.25,  0.25,  0.25],
+            [ 0.25,  0.25,  0.75],
+            [ 0.25,  0.75,  0.25],
+            [ 0.25,  0.75,  0.75],
+            [ 0.75,  0.25,  0.25],
+            [ 0.75,  0.25,  0.75],
+            [ 0.75,  0.75,  0.25],
+            [ 0.75,  0.75,  0.75]
+            ])
     >>> sizes
-    [0.5, 0.5, 0.5]
+        [0.5, 0.5, 0.5]
     
+    Using size:
+
+    >>>  points = np.array([[0.,0.,0.], [1.,1.,1.]])
+    >>> voxelgrid_indices, centers, dimensions = voxelgrid(points, size=0.4)
+    >>> voxelgrid_indices
+        array([ 0, 26], dtype=int64)
+    >>> centers
+        array([
+        [ 0.1,  0.1,  0.1],
+        [ 0.1,  0.1,  0.5],
+        [ 0.1,  0.1,  0.9],
+        [ 0.1,  0.5,  0.1],
+        [ 0.1,  0.5,  0.5],
+        [ 0.1,  0.5,  0.9],
+        [ 0.1,  0.9,  0.1],
+        [ 0.1,  0.9,  0.5],
+        [ 0.1,  0.9,  0.9],
+        [ 0.5,  0.1,  0.1],
+        [ 0.5,  0.1,  0.5],
+        [ 0.5,  0.1,  0.9],
+        [ 0.5,  0.5,  0.1],
+        [ 0.5,  0.5,  0.5],
+        [ 0.5,  0.5,  0.9],
+        [ 0.5,  0.9,  0.1],
+        [ 0.5,  0.9,  0.5],
+        [ 0.5,  0.9,  0.9],
+        [ 0.9,  0.1,  0.1],
+        [ 0.9,  0.1,  0.5],
+        [ 0.9,  0.1,  0.9],
+        [ 0.9,  0.5,  0.1],
+        [ 0.9,  0.5,  0.5],
+        [ 0.9,  0.5,  0.9],
+        [ 0.9,  0.9,  0.1],
+        [ 0.9,  0.9,  0.5],
+        [ 0.9,  0.9,  0.9]
+        ])
+    >>> dimensions
+        [0.4, 0.4, 0.4]
+
     """
-    xyzmin = np.min(points, axis=0) 
-    xyzmax = np.max(points, axis=0) 
 
-    if bb_cuboid:
-        #: adjust to obtain a  minimum bounding box with all sides of equal lenght 
-        diff = max(xyzmax-xyzmin) - (xyzmax-xyzmin)
-        xyzmin = xyzmin - diff / 2
-        xyzmax = xyzmax + diff / 2 
+    xyzmin = points.min(0)
+    xyzmax = points.max(0) 
 
+    if size is None:
+        # adjust to obtain all sides of equal lenght 
+        margins = max(points.ptp(0)) - (points.ptp(0))
+        xyzmin -= margins / 2
+        xyzmax += margins / 2 
+        x_y_z = [n, n, n]
+        
+    else:
+        # adjust to obtain sides divisible by size
+        margins = (((points.ptp(0) // size) + 1) * size) - points.ptp(0)
+        xyzmin -= margins / 2
+        xyzmax += margins / 2
+        x_y_z = ((xyzmax - xyzmin) / size).astype(int) 
+        
     # segment each axis according to number of voxels
-    sizes =[]
+    dimensions = []
     segments = []
     for i in range(3):
-        segment, size = np.linspace(xyzmin[i], xyzmax[i], num=(x_y_z[i] + 1), retstep=True)
+        segment, step = np.linspace(xyzmin[i], xyzmax[i], num=(x_y_z[i] + 1), retstep=True)
         segments.append(segment)
-        sizes.append(size)
+        dimensions.append(step)
     
     # find where each point lies in corresponding segmented axis
     # -1 so index are 0-based; clip for edge cases
@@ -84,7 +133,7 @@ def voxelgrid(points, x_y_z=[1,1,1], bb_cuboiud=True):
     midsegments = [(segments[i][1:] + segments[i][:-1]) / 2 for i in range(3)]
     centers = cartesian(midsegments)
 
-    return voxelgrid_indices, centers, sizes
+    return voxelgrid_indices, centers, dimensions
 
 
 def cartesian(arrays, out=None):
