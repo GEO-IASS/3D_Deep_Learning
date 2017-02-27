@@ -27,7 +27,7 @@ The expected format for the input dataset is:
 input_path/
     train/
         class_1/
-            class_1_001.ply  # .ply or any of the formats inside of io_3D
+            class_1_001.ply  # .ply or any of the formats inside io_3D
             class_1_002.ply
             ...
         class_2/
@@ -48,7 +48,7 @@ input_path/
 
 In `notebooks\rearrange_modelnet40` you can find an example of rearranging the original Modelnet40 dataset into this expected format.
 
-The output dataset will be created at `output_path` with the same structure. All files will contain the feature vector information and will be saved in .npy format.
+The output dataset will be created at `output_path` with the same structure. All files will contain the feature vector information and will be saved in `.npy` format.
 
 ------
 

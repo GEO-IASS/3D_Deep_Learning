@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.spatial.distance import cdist
+from scipy.spatial import cKDTree
 
 def data_3D_to_feature_vector(data_3D, n_voxelgrid, size_voxelgrid=None, n_sampling=None, mode="binary"):
     """ Converts point cloud or mesh into feature vector.
@@ -346,7 +346,11 @@ def truncated_distance_function(points, voxelgrid_centers, x_y_z, voxelgrid_size
     """ Distance from voxel's center to closest surface point. Truncated and normalized.
     """
     truncation = np.linalg.norm(voxelgrid_sizes)
-    vector = cdist(voxelgrid_centers, points).min(1)
+    kdt = cKDTree(points)
+    dist, i =  kdt.query(voxelgrid_centers, n_jobs=-1)
+    dist /= dist.max()
+    dist[dist > truncation] = 1
+    vector = 1 - dist
     return vector.reshape(x_y_z)
 
 def plot_feature_vector(feature_vector, cmap="Oranges"):
