@@ -2,7 +2,7 @@
 
 This repository contains a varied set of resources to make deep learning on three-dimensional data easier.
 
-## tools
+## Tools
 
 Raw 3D data (point clouds, meshes) don't present the required structure to be processed by traditional convolutional neural networks. 
 
