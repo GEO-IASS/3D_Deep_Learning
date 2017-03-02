@@ -1,9 +1,201 @@
-#       HAKUNA MATATA
-
+import re
 import sys
 import numpy as np
 import pandas as pd
 from collections import defaultdict
+from scipy.io import loadmat, savemat
+
+FROM = {
+"MAT": read_mat,
+"NPZ": read_npz,
+"OBJ": read_obj,
+"PLY": read_ply,
+"OFF": read_off
+}
+
+TO = {
+"NPZ": write_npz,
+"OBJ": write_obj,
+"PLY": write_ply
+}
+
+def read_mat(filename, points_name="points", mesh_name="mesh", 
+            points_columns="points_columns",
+            mesh_columns="mesh_columns",
+            points_dtypes="points_dtypes",
+            mesh_dtypes="mesh_dtypes"):
+    """ Read a .mat file and store all possible elements in pandas DataFrame 
+    Parameters
+    ----------
+    filename: str
+        Path tho the filename
+
+    Returns
+    -------
+    data: dict
+        If possible, elements as pandas DataFrames else input format
+    """
+
+    data = {}
+
+    mat = loadmat(filename)
+    
+    if points_columns in mat:
+        columns = [mat[points_columns][i].strip() for i in range(len(mat[points_columns]))]
+        data["points"] = pd.DataFrame(mat[points_name], columns=columns)
+    else:
+        columns = ["x", "y", "z"]
+        for i in range(mat[points_name].shape[1] - 3):
+            columns.append("sf{}".format(i))
+    
+    data["points"] = pd.DataFrame(mat[points_name], columns=columns)  
+    
+    if points_dtypes in mat:
+        for i in range(len(mat[points_dtypes])):
+            data["points"][columns[i]] = data["points"][columns[i]].astype(mat[points_dtypes][i].strip())          
+    
+    if mesh_name in mat:
+        if mesh_columns in mat:
+            columns= [mat[mesh_columns][i].strip() for i in range(len(mat[mesh_columns]))]
+            data["mesh"] = pd.DataFrame(mat[mesh_name], columns=columns)
+        else:
+            columns = ["v1", "v2", "v3"]
+            for i in range(mat[mesh_name].shape[1] - 3):
+                columns.append("sf{}".format(i))
+        data["mesh"] = pd.DataFrame(mat[mesh_name], columns=columns)
+
+        if mesh_dtypes in mat:
+            for i in range(len(mat[mesh_dtypes])):
+                data["mesh"][columns[i]] = data["mesh"][columns[i]].astype(mat[mesh_dtypes][i].strip())     
+
+            
+    return data
+
+def read_npz(filename, points_name="points", mesh_name="mesh"):
+    """ Read a .npz file and store all possible elements in pandas DataFrame 
+    Parameters
+    ----------
+    filename: str
+        Path tho the filename
+    Returns
+    -------
+    data: dict
+        If possible, elements as pandas DataFrames else input format
+    """
+
+    data = {}
+    with np.load(filename) as npz:
+        data["points"] = pd.DataFrame(npz[points_name])
+        if mesh_name in npz:
+            data["mesh"] = pd.DataFrame(npz[mesh_name])
+    return data
+
+
+def write_npz(filename,  **kwargs):  
+    """
+    Parameters
+    ----------
+    filename: str
+        The created file will be named with this
+
+    kwargs: Elements of the pyntcloud to be saved
+
+    Returns
+    -------
+    boolean
+        True if no problems
+    """
+
+    for k in kwargs:
+        if isinstance(kwargs[k], pd.DataFrame):
+            kwargs[k] = kwargs[k].to_records(index=False)
+    np.savez_compressed(filename, **kwargs)
+    return True
+
+def read_obj(filename):
+    """ Reads and obj file and return the elements as pandas Dataframes.
+
+    Parameters
+    ----------
+    filename: str
+        Path to the obj file.
+
+    Returns
+    -------
+     data: dict
+        If possible, elements as pandas DataFrames else input format
+
+    """
+    v = []
+    vn = []
+    f = []
+    
+    with open(filename) as obj:
+        for line in obj:
+            if line.startswith('v '):
+                v.append(line.strip()[1:].split())
+                
+            elif line.startswith('vn'):
+                vn.append(line.strip()[2:].split())
+                
+            elif line.startswith('f'):
+                f.append(line.strip()[2:])
+                
+                
+    points = pd.DataFrame(v, dtype='f4', columns=['x', 'y', 'z'])
+    vn = pd.DataFrame(vn, dtype='f4', columns=['nx', 'ny', 'nz'])
+    
+    if len(f) > 0 and "//" in f[0]:
+        mesh_columns = ['v1', 'vn1', 'v2', 'vn2', 'v3', 'vn3']
+    elif len(vn) > 0:
+        mesh_columns = ['v1', 'vt1', 'vn1', 'v2', 'vt2', 'vn2', 'v3', 'vt3', 'vn3']
+    else:
+        mesh_columns = ['v1', 'vt1', 'v2', 'vt2', 'v3', 'vt3']
+    
+    f = [re.split(r'\D+', x) for x in f]
+    
+    mesh = pd.DataFrame(f, dtype='i4', columns=mesh_columns)
+    
+    data = {'points': points, 'mesh': mesh, "normals":vn}
+    
+    return data
+
+def read_off(filename):
+    """ Reads and off  file and return the elements as pandas Dataframes.
+
+    Parameters
+    ----------
+    filename: str
+        Path to the off file.
+
+    Returns
+    -------
+     data: dict
+        If possible, elements as pandas DataFrames else input format
+        
+    """
+    with open(filename) as off:
+        line = off.readline()
+        if "OFF\n" not in line:
+            numbers = line.split("OFF")[1].split()
+            skip = 1
+        else:
+            numbers = off.readline().strip().split()
+            skip = 2
+
+    n_points = int(numbers[0])
+    n_faces = int(numbers[1])
+
+    data = {}
+
+    data["points"] = pd.read_csv(filename, sep=" ", header=None, engine="python",
+                            skiprows=skip, skip_footer=n_faces,
+                            names=["x", "y", "z"])
+
+    data["mesh"] = pd.read_csv(filename, sep=" ", header=None, engine="python",
+                        skiprows=(skip + n_points), usecols=[1,2,3],
+                        names=["v1", "v2", "v3"])
+    return data
 
 ply_dtypes = dict([
     (b'int8', 'i1'),
@@ -26,7 +218,6 @@ ply_dtypes = dict([
 ])
 
 valid_formats = {'ascii': '', 'binary_big_endian': '>', 'binary_little_endian': '<'}
-
 
 def read_ply(filename):
     """ Read a .ply (binary or ascii) file and store the elements in pandas DataFrame
@@ -132,7 +323,6 @@ def read_ply(filename):
 
 def write_ply(filename, points=None, mesh=None, as_text=False):
     """
-
     Parameters
     ----------
     filename: str
