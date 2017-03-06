@@ -13,7 +13,7 @@ Under this directory you can find different utilities to transform raw 3D data i
 In `io_3D.py` you can find read and write functions for specific 3D formats and generic array formats:
 
 - [.mat](https://es.mathworks.com/help/matlab/import_export/mat-file-versions.html)
-- [.npz](https://docs.scipy.org/doc/numpy-dev/neps/npy-format.html)
+- [.npy / .npz](https://docs.scipy.org/doc/numpy-dev/neps/npy-format.html)
 - [.obj](https://en.wikipedia.org/wiki/Wavefront_.obj_file)
 - [.off](https://en.wikipedia.org/wiki/OFF_(file_format))
 - [.ply](https://en.wikipedia.org/wiki/PLY_(file_format))

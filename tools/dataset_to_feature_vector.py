@@ -17,7 +17,8 @@ from .pointcloud_to_feature_vector import (
 
 def dataset_to_feature_vectors(input_path, output_path, 
                                 n_sampling=None,
-                                n_voxelgrid, size_voxelgrid=None,
+                                n_voxelgrid=30,
+                                size_voxelgrid=None,
                                 mode="binary"):
      """ Create new version of dataset with point clouds and/or meshes transformed into feature vectors.
 
@@ -75,7 +76,8 @@ def dataset_to_feature_vectors(input_path, output_path,
         If n_sampling is None and mesh is found, n_sampling will be assigned to number
         of vertices * 10.
         
-    n_voxelgrid:  int
+    n_voxelgrid:  int, optional
+        Default: 30
         The number of voxels per axis. i.e:
         n_voxelgrid = 2 results in a 2x2x2 voxelgrid
         The bounding box will be adjusted in order to have all sizes of equal length.
@@ -134,7 +136,7 @@ def dataset_to_feature_vectors(input_path, output_path,
                         point_cloud = mesh_sampling(v1, v2, v3, n_sampling)
 
                     else:
-                        point_cloud = data_3D["points"]
+                        point_cloud = data_3D["points"]["x", "y", "z"].values
 
                     v_grid, centers, dimensions, x_y_z = voxelgrid(point_cloud, n_voxelgrid, size_voxelgrid)
 

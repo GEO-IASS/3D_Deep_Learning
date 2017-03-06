@@ -7,6 +7,7 @@ from scipy.io import loadmat, savemat
 
 FROM = {
 "MAT": read_mat,
+"NPY": read_npy,
 "NPZ": read_npz,
 "OBJ": read_obj,
 "PLY": read_ply,
@@ -71,6 +72,30 @@ def read_mat(filename, points_name="points", mesh_name="mesh",
             
     return data
 
+def read_npy(filename, columns=["x", "y", "z"]):
+    """ Read a .npy file and store array in pandas DataFrame. 
+
+    Parameters
+    ----------
+    filename: str
+        Path tho the filename
+    columns: list of str, optional
+        Default: ["x", "y", "z"]
+        Name of columns in the array. Used to create pandas DataFrame.
+
+    Returns
+    -------
+    data: dict
+        Points as pandas DataFrame.
+    """
+
+    data = {}
+    points = np.load(filename)
+    if points.shape[1] != len(columns):
+        columns.extend(range(points.shape[1] - len(columns)))
+    data["points"] = pd.DataFrame(points, columns=columns)
+    return data
+
 def read_npz(filename, points_name="points", mesh_name="mesh"):
     """ Read a .npz file and store all possible elements in pandas DataFrame 
     Parameters
@@ -80,7 +105,7 @@ def read_npz(filename, points_name="points", mesh_name="mesh"):
     Returns
     -------
     data: dict
-        If possible, elements as pandas DataFrames else input format
+        Elements as pandas DataFrames.
     """
 
     data = {}
