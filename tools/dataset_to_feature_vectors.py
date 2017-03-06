@@ -3,24 +3,20 @@ import os
 
 import numpy as np
 
-from .io_3D import FROM 
-from .mesh_to_pointcloud import (
+from io_3D import FROM 
+from mesh_to_pointcloud import (
     get_vertices,
      mesh_sampling
 )
-from .pointcloud_to_feature_vector import (
+from pointcloud_to_feature_vector import (
     voxelgrid,
     binary_vector,
     density_vector,
     truncated_distance_function
 )
 
-def dataset_to_feature_vectors(input_path, output_path, 
-                                n_sampling=None,
-                                n_voxelgrid=30,
-                                size_voxelgrid=None,
-                                mode="binary"):
-     """ Create new version of dataset with point clouds and/or meshes transformed into feature vectors.
+def dataset_to_feature_vectors(input_path, output_path, n_sampling=None, n_voxelgrid=30, size_voxelgrid=None, mode="binary"):
+    """ Create new version of dataset with point clouds and/or meshes transformed into feature vectors.
 
     Parameters
     ----------    
@@ -94,6 +90,7 @@ def dataset_to_feature_vectors(input_path, output_path,
         See correspoding function for details.
 
     """
+
     try:
         os.mkdir(output_path)
     except FileExistsError:
@@ -136,7 +133,7 @@ def dataset_to_feature_vectors(input_path, output_path,
                         point_cloud = mesh_sampling(v1, v2, v3, n_sampling)
 
                     else:
-                        point_cloud = data_3D["points"]["x", "y", "z"].values
+                        point_cloud = data_3D["points"][["x", "y", "z"]].values
 
                     v_grid, centers, dimensions, x_y_z = voxelgrid(point_cloud, n_voxelgrid, size_voxelgrid)
 
@@ -151,7 +148,18 @@ def dataset_to_feature_vectors(input_path, output_path,
 
                     np.save(new_fname, feature_vector)
 
+
 if __name__ == "__main__":
+
     import argparse
 
-    parse = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description='Convert input dataset to feature vectors. Check function docstring for more info.')
+    parser.add_argument('input_path', type=str, help='Path to the input dataset.')
+    parser.add_argument('output_path', type=str, help='Path where the new dataset of feature vectors will be written.')
+    parser.add_argument('--n_sampling', default=None, help='The number of points that will be sampled from the mesh, in case mesh exists.')
+    parser.add_argument('--n_voxelgrid', type=int, default=30, help='The number of voxels per axis.')
+    parser.add_argument('--size_voxelgrid', default=None, help='The desired ouput voxel size. The number of voxels will be infered.')
+    parser.add_argument('--mode', default="binary", help='Type of feature vector to be computed from voxelgrid.')
+
+    args = vars(parser.parse_args())
+    dataset_to_feature_vectors(**args)

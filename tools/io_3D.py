@@ -5,20 +5,6 @@ import pandas as pd
 from collections import defaultdict
 from scipy.io import loadmat, savemat
 
-FROM = {
-"MAT": read_mat,
-"NPY": read_npy,
-"NPZ": read_npz,
-"OBJ": read_obj,
-"PLY": read_ply,
-"OFF": read_off
-}
-
-TO = {
-"NPZ": write_npz,
-"OBJ": write_obj,
-"PLY": write_ply
-}
 
 def read_mat(filename, points_name="points", mesh_name="mesh", 
             points_columns="points_columns",
@@ -432,3 +418,17 @@ def describe_element(name, df):
             element.append('property ' + f + ' ' + df.columns.values[i])
 
     return element
+
+FROM = {
+"MAT": read_mat,
+"NPY": read_npy,
+"NPZ": read_npz,
+"OBJ": read_obj,
+"PLY": read_ply,
+"OFF": read_off
+}
+
+TO = {
+"NPZ": write_npz,
+"PLY": write_ply
+}
