@@ -4,8 +4,6 @@ A 3D version of the [MNIST database of handwritten digits](http://yann.lecun.com
 
 You can also find and download the [dataset at Kaggle](https://www.kaggle.com/daavoo/3d-mnist)
 
-![3D MNIST](3Dmnist.png)
-
 This dataset contains 3D point clouds generated from the original images of the MNIST dataset to bring a familiar introduction of 3D for people used to work with 2D datasets (images).
 
 # Content
