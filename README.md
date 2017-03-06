@@ -31,6 +31,36 @@ Functions for this pipeline are inside `mesh_to_pointcloud.py` and `pointcloud_t
 
 You can use `dataset_to_feature_vector.py` to compute a new version of the dataset by transforming the original data into 3D feature vectors; ready to be used by `generator3D.py`.
 
+```
+python dataset_to_feature_vector.py -h
+
+usage: dataset_to_feature_vectors.py [-h] [--n_sampling N_SAMPLING]
+                                     [--n_voxelgrid N_VOXELGRID]
+                                     [--size_voxelgrid SIZE_VOXELGRID]
+                                     [--mode MODE]
+                                     input_path output_path
+
+Convert input dataset to feature vectors. Check function docstring for more
+info.
+
+positional arguments:
+  input_path            Path to the input dataset.
+  output_path           Path where the new dataset of feature vectors will be
+                        written.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --n_sampling N_SAMPLING
+                        The number of points that will be sampled from the
+                        mesh, in case mesh exists.
+  --n_voxelgrid N_VOXELGRID
+                        The number of voxels per axis.
+  --size_voxelgrid SIZE_VOXELGRID
+                        The desired ouput voxel size. The number of voxels
+                        will be infered.
+  --mode MODE           Type of feature vector to be computed from voxelgrid.
+```
+
 The expected format for the input dataset is:
 
 ```
@@ -55,8 +85,6 @@ input_path/
             class_2_002.ply
             ...
 ```
-
-In `notebooks\rearrange_modelnet40` you can find an example of rearranging the original Modelnet40 dataset into this expected format.
 
 The output dataset will be:
 
