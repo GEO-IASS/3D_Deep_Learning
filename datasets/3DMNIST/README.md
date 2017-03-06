@@ -6,20 +6,18 @@ You can also find and download the [dataset at Kaggle](https://www.kaggle.com/da
 
 ![3D MNIST](3Dmnist.png)
 
-The aim of this dataset is to provide a simple way to get started with 3D computer vision problems.
-
-However there is a lack of large 3D datasets (you can find a [good one here](http://shapenet.cs.stanford.edu/) based on triangular meshes); it's especially hard  to find datasets based on point clouds (wich is the raw output from every 3D sensing device).
-
-This dataset contains 3D point clouds generated from the original images of the MNIST dataset to bring a familiar introduction to 3D to people used to work with 2D datasets (images).
+This dataset contains 3D point clouds generated from the original images of the MNIST dataset to bring a familiar introduction of 3D for people used to work with 2D datasets (images).
 
 # Content
 
-Full dataset containing train (4000 point clouds), test (1000) and valid (1000) folders compressed.
+You can use `img_to_pointcloud.ipynb` to generate the dataset from the original images. Following this notebook will let you choose the number of point cloud you wish to generate. Default is as many point clouds as images in the original dataset.
 
-The dataset is in the format ready to be used by `dataset_to_feature_vector.py`.
+You can also download the dataset from [this link](https://mega.nz/#!LAZmXZKB).
+
+The dataset's format is ready to be used by `dataset_to_feature_vector.py`.
 
 ```
-data.zip/
+data/
     train/
         0/
             0.npy

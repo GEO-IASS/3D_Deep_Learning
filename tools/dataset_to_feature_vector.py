@@ -83,7 +83,7 @@ def dataset_to_feature_vectors(input_path, output_path,
     size_voxelgrid: float, optional
         Default: None
         The desired voxel size. The number of voxels will be infered. i.e:
-        size = 0.2 results in a IxJxK voxelgrid ensuring that each voxel is 0.2x0.2x0.2
+        size = 0.2 results in a IxJxK voxelgrid ensuring that each voxel is 0.2 x 0.2 x 0.2
         If size_voxelgrid is not None, n_voxelgrid will be ignored.
         The bounding box will be adjusted in order to make each axis divisible by size.
     
