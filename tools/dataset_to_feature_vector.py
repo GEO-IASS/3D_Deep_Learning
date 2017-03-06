@@ -4,7 +4,16 @@ import os
 import numpy as np
 
 from .io_3D import FROM 
-from .data_3D_to_feature_vector import data_3D_to_feature_vector
+from .mesh_to_pointcloud import (
+    get_vertices,
+     mesh_sampling
+)
+from .pointcloud_to_feature_vector import (
+    voxelgrid,
+    binary_vector,
+    density_vector,
+    truncated_distance_function
+)
 
 def dataset_to_feature_vectors(input_path, output_path, 
                                 n_sampling=None,
