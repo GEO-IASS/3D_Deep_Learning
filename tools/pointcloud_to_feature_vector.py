@@ -1,4 +1,6 @@
 
+import numpy as np
+
 def voxelgrid(points, n=2, size=None):
     """ Build a voxelgrid and compute the corresponding index for each point.
 
@@ -190,7 +192,7 @@ def binary_vector(voxelgrid, x_y_z):
     n_x, n_y, n_z = x_y_z
     vector = np.zeros(n_x * n_y * n_z)
     vector[np.unique(voxelgrid)] = 1
-    return vector.reshape(x_y_z)
+    return vector.reshape(x_y_z).astype(np.uint8)
 
 def density_vector(voxelgrid, x_y_z):
     """ Number of points per voxel divided by total number of points
@@ -200,7 +202,7 @@ def density_vector(voxelgrid, x_y_z):
     count = np.bincount(voxelgrid)
     vector[:len(count)] = count
     vector /= len(voxelgrid)
-    return vector.reshape(x_y_z)
+    return vector.reshape(x_y_z).astype(np.float16)
 
 def truncated_distance_function(points, voxelgrid_centers, x_y_z, voxelgrid_sizes):
     """ Distance from voxel's center to closest surface point. Truncated and normalized.
@@ -211,4 +213,4 @@ def truncated_distance_function(points, voxelgrid_centers, x_y_z, voxelgrid_size
     dist /= dist.max()
     dist[dist > truncation] = 1
     vector = 1 - dist
-    return vector.reshape(x_y_z)
+    return vector.reshape(x_y_z).astype(np.float16)

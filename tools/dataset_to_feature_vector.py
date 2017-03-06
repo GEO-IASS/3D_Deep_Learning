@@ -18,8 +18,7 @@ from .pointcloud_to_feature_vector import (
 def dataset_to_feature_vectors(input_path, output_path, 
                                 n_sampling=None,
                                 n_voxelgrid, size_voxelgrid=None,
-                                mode="binary",
-                                out_type=np.float32):
+                                mode="binary"):
      """ Create new version of dataset with point clouds and/or meshes transformed into feature vectors.
 
     Parameters
@@ -148,7 +147,7 @@ def dataset_to_feature_vectors(input_path, output_path,
                     else:
                         raise ValueError("Unvalid mode; avaliable modes are: {}".format({"binary", "density", "truncated"}))
 
-                    np.save(new_fname, feature_vector.astype(out_type))
+                    np.save(new_fname, feature_vector)
 
 if __name__ == "__main__":
     import argparse
