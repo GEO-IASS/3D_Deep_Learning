@@ -41,7 +41,16 @@ class VoxelGridDataGenerator(object):
         Number of voxels to be shifted along y axis.
         
     z_shift_voxel_range : uint, optional (Default None)
-        Number of voxels to be shifted along z axis. 
+        Number of voxels to be shifted along z axis.
+    
+    x_flip : bool, optional (Default False)
+        Flip around x axis with random probability
+        
+    y_flip : bool, optional (Default False)
+        Flip around y axis with random probability
+    
+    z_flip : bool, optional (Default False)
+        Flip around z axis with random probability
         
     data_format: str in {'channels_first', 'channels_last'} optional (Default None)
         In 'channels_first' mode, the channels dimension (the depth) is at index 1.
@@ -104,7 +113,7 @@ class VoxelGridDataGenerator(object):
     def flow_from_directory(self, 
                             directory,
                             n_sampling=None,
-                            target_size=(30,30,30),
+                            target_size=(32,32,32),
                             voxel_mode="binary",
                             classes=None, 
                             class_mode='categorical',
@@ -240,7 +249,7 @@ class DirectoryIterator(Iterator):
                  directory, 
                  voxelgrid_data_generator,
                  n_sampling=None,
-                 target_size=(30,30,30),
+                 target_size=(32,32,32),
                  voxel_mode="binary",
                  data_format=None,
                  classes=None, 
@@ -290,7 +299,7 @@ class DirectoryIterator(Iterator):
         self.class_indices = dict(zip(classes, range(len(classes))))
         
         # first, count the number of samples and classes
-        self.nb_sample = 0
+        self.samples = 0
         def _recursive_list(subpath):
             return sorted(os.walk(subpath, followlinks=follow_links), key=lambda tpl: tpl[0])
 
@@ -300,13 +309,13 @@ class DirectoryIterator(Iterator):
                 for fname in files:
                     ext = fname.split(".")[-1].upper() 
                     if ext in valid_formats:
-                        self.nb_sample += 1
+                        self.samples += 1
                         
-        print('Found {} images belonging to {} classes.'.format(self.nb_sample, self.nb_class))
+        print('Found {} 3D files belonging to {} classes.'.format(self.samples, self.nb_class))
 
         # second, build an index of the images in the different class subfolders
         self.filenames = []
-        self.classes = np.zeros((self.nb_sample,), dtype='int32')
+        self.classes = np.zeros((self.samples,), dtype='int32')
         i = 0
         for subdir in classes:
             subpath = os.path.join(directory, subdir)
@@ -320,7 +329,7 @@ class DirectoryIterator(Iterator):
                         absolute_path = os.path.join(root, fname)
                         self.filenames.append(os.path.relpath(absolute_path, directory))
                         
-        super(DirectoryIterator, self).__init__(self.nb_sample, batch_size, shuffle, seed)
+        super(DirectoryIterator, self).__init__(self.samples, batch_size, shuffle, seed)
 
     def next(self):
         with self.lock:
